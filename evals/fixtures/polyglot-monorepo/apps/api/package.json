@@ -1,0 +1,6 @@
+{
+  "name": "@fixture/api",
+  "version": "0.1.0",
+  "scripts": { "start": "node dist/index.js", "build": "tsc" },
+  "dependencies": { "@fixture/utils": "*", "hono": "^4.0.0" }
+}

@@ -1,0 +1,89 @@
+{
+  "skill_name": "agent-docs-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up the fixture and run a fresh bootstrap. Steps:\n1. Copy the fixture at evals/fixtures/ts-next/ (relative to the agent-docs-skill repo) into a fresh temp directory and cd into it.\n2. Run `git init`, then `git checkout -b main` (or rename the default branch if needed), `git add .`, `git commit -m init`.\n3. Now act on the user phrase: \"bootstrap documentation\". Follow the agent-docs-skill workflow exactly.\n4. After writing files, list `.agents/docs/` recursively.\nThe fixture is a Next.js / TypeScript app with two source modules (auth, billing), a tailwind config, and a components/ directory containing JSX. Do NOT modify anything outside `.agents/docs/`. Save the entire `.agents/docs/` tree, plus a transcript of the user-facing notice you displayed, into the outputs directory.",
+      "expected_output": ".agents/docs/{index.md, stack.md, core.md, frontend.md, modules/auth.md, modules/billing.md}; index.md lists exactly auth and billing modules and includes the |frontend:{frontend.md} line; user is shown the post-bootstrap notice exactly once; no file written outside .agents/docs/.",
+      "files": ["evals/fixtures/ts-next/"],
+      "expectations": [
+        "The output contains .agents/docs/index.md",
+        "The output contains .agents/docs/stack.md",
+        "The output contains .agents/docs/core.md",
+        "The output contains .agents/docs/frontend.md (frontend was detected)",
+        "The output contains .agents/docs/modules/auth.md",
+        "The output contains .agents/docs/modules/billing.md",
+        "index.md modules list contains exactly auth and billing (no extras, no missing)",
+        "index.md includes the frontend line because tailwind.config.ts and components/Button.tsx were present",
+        "The post-bootstrap notice instructing the user to add a one-line pointer to AGENTS.md/CLAUDE.md was shown",
+        "No files were written outside .agents/docs/",
+        "Every code anchor (path:Lstart-Lend) in generated docs points at a real file with at least Lend lines"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Set up the fixture and run a fresh bootstrap. Steps:\n1. Copy the fixture at evals/fixtures/py-fastapi/ into a fresh temp directory and cd into it.\n2. Run `git init`, `git checkout -b main`, `git add .`, `git commit -m init`.\n3. Now act on the user phrase: \"bootstrap documentation\". Follow the agent-docs-skill workflow exactly.\n4. List `.agents/docs/` recursively.\nThe fixture is a FastAPI app under `app/` with two router modules (users, orders) and an `app/main.py` entry. Do NOT modify anything outside `.agents/docs/`. Save outputs as in eval 1.",
+      "expected_output": ".agents/docs/{index.md, stack.md, core.md, modules/users.md, modules/orders.md}; no frontend.md; index.md omits the |frontend line; no file written outside .agents/docs/.",
+      "files": ["evals/fixtures/py-fastapi/"],
+      "expectations": [
+        "The output contains .agents/docs/index.md",
+        "The output contains .agents/docs/stack.md",
+        "The output contains .agents/docs/core.md",
+        "The output contains .agents/docs/modules/users.md",
+        "The output contains .agents/docs/modules/orders.md",
+        "The output does NOT contain .agents/docs/frontend.md (no frontend signals)",
+        "index.md modules list contains exactly users and orders",
+        "index.md does NOT include a |frontend line",
+        "stack.md mentions FastAPI and pyproject.toml",
+        "No files were written outside .agents/docs/",
+        "Every code anchor in generated docs resolves to a real file and line range"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Set up the fixture and run a fresh bootstrap. Steps:\n1. Copy the fixture at evals/fixtures/polyglot-monorepo/ into a fresh temp directory and cd into it.\n2. Run `git init`, `git checkout -b main`, `git add .`, `git commit -m init`.\n3. Now act on the user phrase: \"bootstrap documentation\". Follow the agent-docs-skill workflow exactly.\n4. List `.agents/docs/` recursively.\nThe fixture is a workspace monorepo with packages/sdk, packages/utils, apps/web (which contains a components/Dashboard.tsx), and apps/api. Do NOT modify anything outside `.agents/docs/`. Save outputs as in eval 1.",
+      "expected_output": ".agents/docs/{index.md, stack.md, core.md, frontend.md, modules/sdk.md, modules/utils.md, modules/web.md, modules/api.md}; index.md lists all four modules and includes the |frontend line.",
+      "files": ["evals/fixtures/polyglot-monorepo/"],
+      "expectations": [
+        "The output contains .agents/docs/index.md",
+        "The output contains .agents/docs/modules/sdk.md",
+        "The output contains .agents/docs/modules/utils.md",
+        "The output contains .agents/docs/modules/web.md",
+        "The output contains .agents/docs/modules/api.md",
+        "The output contains .agents/docs/frontend.md (apps/web has Dashboard.tsx in components/)",
+        "index.md modules list contains exactly sdk, utils, web, api (no extras, no missing)",
+        "index.md includes the |frontend line",
+        "No files were written outside .agents/docs/",
+        "Every code anchor in generated docs resolves to a real file and line range"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Set up the fixture for an incremental update. Steps:\n1. Copy the fixture at evals/fixtures/preexisting-docs/ into a fresh temp directory and cd into it. The fixture already contains `.agents/docs/` from a prior run.\n2. Run `git init`, `git checkout -b main`, `git add .`, `git commit -m init`.\n3. `git checkout -b feature`.\n4. Append the line `// session helper added\\n` to src/auth/session.ts and commit with `git add . && git commit -m \"tweak auth\"`.\n5. Create a new module: `mkdir -p src/payments && printf 'export const stub = 1;\\n' > src/payments/index.ts` and commit with `git add . && git commit -m \"add payments\"`.\n6. Now act on the user phrase: \"update documentation\". Follow the agent-docs-skill update workflow exactly. Capture the user-facing proposal you display BEFORE writing anything. Then say `yes, proceed` on behalf of the user and write the docs.\n7. List `.agents/docs/` recursively. Save the proposal text and the post-update tree to outputs.\nDo NOT modify anything outside `.agents/docs/`.",
+      "expected_output": "Proposal lists docs/modules/auth.md to update and creates docs/modules/payments.md as a new module; index.md is regenerated with payments added; no other docs are touched without confirmation.",
+      "files": ["evals/fixtures/preexisting-docs/"],
+      "expectations": [
+        "The proposal shown to the user names .agents/docs/modules/auth.md as a doc to update",
+        "The proposal flags .agents/docs/modules/payments.md as a NEW module to be created",
+        "After the run, .agents/docs/modules/payments.md exists",
+        "After the run, .agents/docs/index.md modules list contains payments alongside auth and users",
+        "The proposal does NOT propose updating .agents/docs/modules/users.md (it was untouched)",
+        "No files were written outside .agents/docs/",
+        "The post-bootstrap notice was NOT shown (this was an update run)",
+        "Every code anchor in modified docs resolves to a real file and line range"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Set up the fixture and verify the on-main-branch regression. Steps:\n1. Copy the fixture at evals/fixtures/on-main-branch/ into a fresh temp directory and cd into it.\n2. Run `git init`, `git checkout -b main`, `git add .`, `git commit -m init`.\n3. STAY ON main. Do not create any branch.\n4. Now act on the user phrase: \"update documentation\". Follow the agent-docs-skill update workflow.\n5. Capture and save what you reply to the user. Then list `.agents/docs/` recursively to confirm nothing changed.",
+      "expected_output": "The skill stops cleanly with a message like 'Already on the main branch — no diff to summarize.' No files are modified.",
+      "files": ["evals/fixtures/on-main-branch/"],
+      "expectations": [
+        "The reply tells the user they are on main and update is a no-op from main",
+        "No files in .agents/docs/ were modified",
+        "No new files were created in .agents/docs/",
+        "No files were written outside .agents/docs/"
+      ]
+    }
+  ]
+}
