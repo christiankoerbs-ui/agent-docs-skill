@@ -1,0 +1,11 @@
+{
+  "name": "@fixture/web",
+  "version": "0.1.0",
+  "scripts": { "dev": "vite", "build": "vite build" },
+  "dependencies": {
+    "@fixture/sdk": "*",
+    "@fixture/utils": "*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
